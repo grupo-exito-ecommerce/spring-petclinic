@@ -8,11 +8,12 @@ pipeline {
 		git 'https://github.com/grupo-exito-ecommerce/spring-petclinic.git'
             }
         }
-        stage('Build') {
+        stage('build & SonarQube analysis') {
             steps {
                 echo 'Building..'
-		sh 'mvn clean package'
-            }
+		withSonarQubeEnv('My SonarQube Server') {
+		  sh 'mvn clean package sonar:sonar'
+		}
         }
         stage('Deploy') {
             steps {

@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checkout..'
+		git 'https://github.com/grupo-exito-ecommerce/spring-petclinic.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'Building..'
+		sh 'mvn clean package'
+		junit '**/target/surefire-reports/TEST-*.mxl'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
+}

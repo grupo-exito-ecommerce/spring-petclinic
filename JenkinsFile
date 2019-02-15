@@ -18,9 +18,10 @@ pipeline {
 	steps {
 		withSonarQubeEnv('localSonar') {
 			//Si quieres ver la cobertura en sonar es necesario ejecutar cobertura y después sonar
-			//bat "mvn -B --batch-mode -V -U -e org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=true"
-			sh  "mvn -B --batch-mode -V -U -e sonar:sonar"
-			echo 'Sonarqube Analysis'
+			sh "mvn -B --batch-mode -V -U -e org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=true"
+			echo 'Sonarqube Analysis 1'
+			sh  "mvn -B --batch-mode -V -U -e sonar:sonar -P coverage-per-test"
+			echo 'Sonarqube Analysis 2'
 			//Realizamos análisis de cobertura de código
 			//Si la cobertura de código es inferior al 80% falla la ejecución y falla el workflow
 			sh "mvn -B --batch-mode -V -U -e verify"

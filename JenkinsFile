@@ -16,6 +16,7 @@ pipeline {
 		}
 	    }*/
 	steps {
+		withSonarQubeEnv('localSonar') {
 		parallel 'Sonarqube Analysis': {
 			//Si quieres ver la cobertura en sonar es necesario ejecutar cobertura y después sonar
 			//bat "mvn -B --batch-mode -V -U -e org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=true"
@@ -26,6 +27,7 @@ pipeline {
 			//Si la cobertura de código es inferior al 80% falla la ejecución y falla el workflow
 			sh "mvn -B --batch-mode -V -U -e verify"
 		   }
+		}
 		}
         }
         stage('Deploy') {

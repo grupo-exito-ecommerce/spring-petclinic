@@ -1,41 +1,40 @@
 pipeline {
     agent any
-
     stages {
         stage('Checkout') {
             steps {
                 echo 'Checkout..'
-		git 'https://github.com/grupo-exito-ecommerce/spring-petclinic.git'
+                git 'https://github.com/grupo-exito-ecommerce/spring-petclinic.git'
             }
         }
         stage('build & SonarQube analysis') {
             /*steps {
-		 echo 'Building..'
-		withSonarQubeEnv('localSonar') {
-		  sh 'mvn clean package sonar:sonar'
-		}
-	    }*/
-	steps {
-		withSonarQubeEnv('localSonar') {
+                 echo 'Building..'
+                withSonarQubeEnv('localSonar') {
+                  sh 'mvn clean package sonar:sonar'
+                }
+            }*/
+		steps {
+			withSonarQubeEnv('localSonar') {
 			//Si quieres ver la cobertura en sonar es necesario ejecutar cobertura y después sonar
-			sh "mvn -B --batch-mode -V -U -e org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=true"
-			echo 'Sonarqube Analysis 1'
-			sh  "mvn -B --batch-mode -V -U -e sonar:sonar -P coverage-per-test"
-			echo 'Sonarqube Analysis 2'
-			//Realizamos análisis de cobertura de código
-			//Si la cobertura de código es inferior al 80% falla la ejecución y falla el workflow
-			sh "mvn -B --batch-mode -V -U -e verify"
+				sh "mvn -B --batch-mode -V -U -e org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=true"
+				echo 'Sonarqube Analysis 1'
+				sh  "mvn -B --batch-mode -V -U -e sonar:sonar -P coverage-per-test"
+				echo 'Sonarqube Analysis 2'
+				//Realizamos análisis de cobertura de código
+				//Si la cobertura de código es inferior al 80% falla la ejecución y falla el workflow
+				sh "mvn -B --batch-mode -V -U -e verify"
+			}
 		}
-	     }
 	}
-	stage("SonarQube Quality Gate") { 
-		timeout(time: 1, unit: 'HOURS') {  
-		def qg = waitForQualityGate() 
-		if (qg.status != 'OK') {
-			error "Pipeline aborted due to quality gate failure: ${qg.status}"
-		}
-	    }
-	}
+        stage("SonarQube Quality Gate") {
+                timeout(time: 1, unit: 'HOURS') {
+                def qg = waitForQualityGate()
+                if (qg.status != 'OK') {
+                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                }
+            }
+        }
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
@@ -43,3 +42,4 @@ pipeline {
         }
     }
 }
+
